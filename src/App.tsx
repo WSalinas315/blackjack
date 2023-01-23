@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 
@@ -14,10 +13,31 @@ function App() {
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
   const [dealerHand, setDealerHand] = useState<Card[]>([]);
   const [phaseOfGame, setPhaseOfGame] = useState<string>("new");
+  const [winner, setWinner] = useState<string>("Push!");
+
 
   useEffect(() => {
-
+    let dealerHandTotal: number = handSum(dealerHand)
+    let playerHandTotal: number = handSum(playerHand)
+    if ((dealerHandTotal > playerHandTotal || dealerHandTotal >= 17) && (phaseOfGame != "player" && phaseOfGame != "start")) {
+      setPhaseOfGame("end")
+      determineWinner()
+    }
   })
+
+  const determineWinner = () => {
+    let dealerHandTotal: number = handSum(dealerHand)
+    let playerHandTotal: number = handSum(playerHand)
+    if (playerHandTotal > dealerHandTotal && playerHandTotal < 22) {
+      setWinner("You Win!")
+    } else if (dealerHandTotal > playerHandTotal && dealerHandTotal < 22) {
+      setWinner("Dealer Wins!")
+    } else if (playerHandTotal < 22 && dealerHandTotal > 21) {
+      setWinner("You Win!")
+    } else if (dealerHandTotal < 22 && playerHandTotal > 21) {
+      setWinner("Dealer Wins!")
+    }
+  }
 
   function createDeck() {
     setPhaseOfGame("new")
@@ -60,8 +80,10 @@ function App() {
     setDealerHand([])
     // await new Promise(resolve => setTimeout(resolve, 5000));
   }
-
+  
   const startGame = () => {
+    setPlayerHand([])
+    setDealerHand([])
     for (let i: number = 0; i < 4; i++) {
       if (i == 0 || i == 1) {
         hit()
@@ -71,6 +93,7 @@ function App() {
     }
     setPhaseOfGame("player")
   }
+  console.log(phaseOfGame)
 
   const hit = () => {
     let cardIndex = getRandomInt(deck.length)
@@ -84,6 +107,11 @@ function App() {
     setPlayerHand([...newPlayerHand])
     console.log("playerHand", playerHand)
     console.log("deck", deck)
+    let playerHandTotal: number = handSum(playerHand)
+    if (playerHandTotal > 21) {
+      setPhaseOfGame("end")
+      determineWinner()
+    }
   }
 
   const dealerHit = () => {
@@ -103,17 +131,19 @@ function App() {
   const dealerDecision = () => {
     setPhaseOfGame("dealer")
     let dealerHandTotal: number = handSum(dealerHand)
+    let playerHandTotal: number = handSum(playerHand)
     console.log("handSum", dealerHandTotal)
-    if (dealerHandTotal < 17) {
+    if (dealerHandTotal >= 17 || dealerHandTotal > playerHandTotal) {
+      setPhaseOfGame("end")
+      determineWinner()
+    } else {
       dealerHit()
     }
   }
 
   const handSum = (hand: Card[]) => {
-    console.log('IN  HAND SUM')
-    console.log(hand)
-    let sum = 0;
-    let aceCount = 0;
+    let sum: number = 0;
+    let aceCount: number = 0;
     for (let card of hand) {
       if (card.value == ("King") || card.value == ("Queen") || card.value == ("Jack")) {
         sum = sum + 10
@@ -140,18 +170,23 @@ function App() {
   return (
     <div className="App">
       Blackjack!
-
-      <button onClick={newDeck}>
-        new deck
-      </button>
-      <button onClick={startGame}>
-        start game
-      </button>
+      <br />
+      <br />
+      {((phaseOfGame == 'new') || (phaseOfGame == 'end')) && <>
+        <button onClick={newDeck}>
+          new deck
+        </button>
+        <br />
+        <button onClick={startGame}>
+          start game
+        </button>
+      </>
+      }
       <br />
       <br />
       {phaseOfGame == "player" &&
         <button onClick={hit}>
-          hit
+          Hit
         </button>
       }
       <br />
@@ -168,25 +203,34 @@ function App() {
         Player's Total Card Value: {handSum(playerHand)}
         <br />
         <br />
-        {phaseOfGame == "player" &&
+        {(phaseOfGame == "player" || phaseOfGame == "dealer") &&
           <button onClick={dealerDecision}>
             Dealer Plays!
           </button>
         }
         <br />
         <b>Dealer's Hand</b>
-        {dealerHand && dealerHand.map((card: Card, i) => {
-          return (
-            <div key={i}>
-              {card.value} of {" "} {card.suit}s
-            </div>
-          )
+        <br />
+        {phaseOfGame == 'player' ?
+          <div>
+            {dealerHand[0].value} of {" "} {dealerHand[0].suit}s
+            <br />
+            [Hidden card]
+            <br />
+            Dealer's Total Card Value: ?
+          </div> : <>
+            {dealerHand && dealerHand.map((card: Card, i) => {
+              return (
+                <div key={i}>
+                  {card.value} of {" "} {card.suit}s
+                </div>
+              )
+            })}
+            Dealer's Total Card Value: {handSum(dealerHand)}
+            <br />
+          </>
         }
-        )}
-        <br />
-        Dealer's Total Card Value: {handSum(dealerHand)}
-        <br />
-        {phaseOfGame === "end" && <h2>GAME OVER!</h2>}
+        {phaseOfGame === "end" && <h2>{winner}</h2>}
       </div>
     </div>
   );
