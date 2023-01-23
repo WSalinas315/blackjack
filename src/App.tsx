@@ -36,6 +36,8 @@ function App() {
       setWinner("You Win!");
     } else if (dealerHandTotal < 22 && playerHandTotal > 21) {
       setWinner("Dealer Wins!");
+    } else if (dealerHandTotal == playerHandTotal){
+      setWinner("PUSH");
     }
   }
 
