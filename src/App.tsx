@@ -15,6 +15,9 @@ function App() {
   const [dealerHand, setDealerHand] = useState<Card[]>([]);
   const [dealerAction, setDealerAction] = useState<string>('hit');
 
+useEffect(() => {
+
+})
 
   function createDeck() {
     let newDeck = []
@@ -37,6 +40,17 @@ function App() {
     setDeck(newDeck)
     setPlayerHand([])
     setDealerHand([])
+    // await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+  
+  const startGame = () => {
+    for (let i: number = 0; i < 4; i++) {
+      if (i == 0 || i == 1) {
+        hit()
+      } else {
+        dealerHit()
+      }
+    }
   }
 
   const hit = () => {
@@ -45,8 +59,10 @@ function App() {
     let card = deck[cardIndex]
     let newDeck = deck
     newDeck.splice(cardIndex, 1)
-    setDeck(newDeck)
-    setPlayerHand([...playerHand, card])
+    setDeck([...newDeck])
+    let newPlayerHand = playerHand
+    newPlayerHand.push(card)
+    setPlayerHand([...newPlayerHand])
     console.log("playerHand", playerHand)
     console.log("deck", deck)
   }
@@ -57,8 +73,10 @@ function App() {
     let card = deck[cardIndex]
     let newDeck = deck
     newDeck.splice(cardIndex, 1)
-    setDeck(newDeck)
-    setDealerHand([...dealerHand, card])
+    setDeck([...newDeck])
+    let newDealerHand = dealerHand
+    newDealerHand.push(card)
+    setDealerHand([...newDealerHand])
     console.log("DealerHand", dealerHand)
     console.log("deck", deck)
   }
@@ -68,14 +86,11 @@ function App() {
     console.log("handSum", dealerHandTotal)
     if (dealerHandTotal < 17) {
       dealerHit()
-      return "hit"
-    } else {
-      return "pass"
     }
   }
 
   const handSum = (hand: Card[]) => {
-    console.log("IN  HAND SUM")
+    console.log('IN  HAND SUM')
     console.log(hand)
     let sum = 0;
     for (let card of hand) {
@@ -88,30 +103,8 @@ function App() {
         sum = sum + card.value
       }
     }
-    console.log("sum", sum)
+    console.log('sum', sum)
     return sum
-  }
-  const dealerPlays = () => {
-    // let action = "hit"
-    // while (action == "hit") {
-    //   action = dealerDecision()
-    //   console.log(action)
-    // }
-    while (dealerAction == "hit") {
-      let action = dealerDecision()
-      setDealerAction(action)
-      console.log("dealerAction", dealerAction)
-    }
-    // let sum = handSum(dealerHand);
-    // while (sum < 17) {
-    //   dealerHit();
-    //   sum = handSum(dealerHand);
-
-    // }
-    
-    // let action = dealerDecision()
-    // console.log("action", action)
-
   }
 
   return (
@@ -120,6 +113,9 @@ function App() {
       
       <button onClick={newDeck}>
         new deck
+      </button>
+      <button onClick={startGame}>
+        start game
       </button>
       <button onClick={hit}>
         hit
@@ -136,8 +132,8 @@ function App() {
         )}
         {/* Player's Total Card Value: {handSum(playerHand)} */}
         <br/>
-      <button onClick={dealerPlays}>
-        Pass
+      <button onClick={dealerDecision}>
+        Dealer Plays!
       </button>
         <br/>
         <br/>
