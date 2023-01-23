@@ -13,13 +13,14 @@ function App() {
   const [deck, setDeck] = useState<Card[]>([]);
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
   const [dealerHand, setDealerHand] = useState<Card[]>([]);
-  const [dealerAction, setDealerAction] = useState<string>('hit');
+  const [phaseOfGame, setPhaseOfGame] = useState<string>("new");
 
   useEffect(() => {
 
   })
 
   function createDeck() {
+    setPhaseOfGame("new")
     let newDeck = []
     for (let i: number = 0; i < 13; i++) {
       let value: string = (i + 1).toString()
@@ -68,6 +69,7 @@ function App() {
         dealerHit()
       }
     }
+    setPhaseOfGame("player")
   }
 
   const hit = () => {
@@ -99,6 +101,7 @@ function App() {
   }
 
   const dealerDecision = () => {
+    setPhaseOfGame("dealer")
     let dealerHandTotal: number = handSum(dealerHand)
     console.log("handSum", dealerHandTotal)
     if (dealerHandTotal < 17) {
@@ -122,19 +125,15 @@ function App() {
       }
     }
     if (sum > 21) {
-      console.log('sum is more than 21', sum)
       let newSum = sum
       for (let i: number = aceCount; i > 0; i--) {
-        console.log('ace being counted')
         newSum -= 10
-        console.log('newSum is', newSum)
         if (newSum <= 21) {
           break;
         }
       }
       sum = newSum
     }
-    console.log('sum', sum)
     return sum
   }
 
@@ -148,9 +147,15 @@ function App() {
       <button onClick={startGame}>
         start game
       </button>
-      <button onClick={hit}>
-        hit
-      </button>
+      <br />
+      <br />
+      {phaseOfGame == "player" &&
+        <button onClick={hit}>
+          hit
+        </button>
+      }
+      <br />
+      <b>Player's Hand</b>
       <div className="deck">
         {playerHand && playerHand.map((card: Card, i) => {
           return (
@@ -162,11 +167,14 @@ function App() {
         )}
         Player's Total Card Value: {handSum(playerHand)}
         <br />
-        <button onClick={dealerDecision}>
-          Dealer Plays!
-        </button>
         <br />
+        {phaseOfGame == "player" &&
+          <button onClick={dealerDecision}>
+            Dealer Plays!
+          </button>
+        }
         <br />
+        <b>Dealer's Hand</b>
         {dealerHand && dealerHand.map((card: Card, i) => {
           return (
             <div key={i}>
@@ -175,7 +183,10 @@ function App() {
           )
         }
         )}
-        {/* Dealer's Total Card Value: {handSum(dealerHand)} */}
+        <br />
+        Dealer's Total Card Value: {handSum(dealerHand)}
+        <br />
+        {phaseOfGame === "end" && <h2>GAME OVER!</h2>}
       </div>
     </div>
   );
