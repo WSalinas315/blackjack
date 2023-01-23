@@ -17,47 +17,47 @@ function App() {
 
 
   useEffect(() => {
-    let dealerHandTotal: number = handSum(dealerHand)
-    let playerHandTotal: number = handSum(playerHand)
+    let dealerHandTotal: number = handSum(dealerHand);
+    let playerHandTotal: number = handSum(playerHand);
     if ((dealerHandTotal > playerHandTotal || dealerHandTotal >= 17) && (phaseOfGame != "player" && phaseOfGame != "start")) {
-      setPhaseOfGame("end")
-      determineWinner()
+      setPhaseOfGame("end");
+      determineWinner();
     }
   })
 
   const determineWinner = () => {
-    let dealerHandTotal: number = handSum(dealerHand)
-    let playerHandTotal: number = handSum(playerHand)
+    let dealerHandTotal: number = handSum(dealerHand);
+    let playerHandTotal: number = handSum(playerHand);
     if (playerHandTotal > dealerHandTotal && playerHandTotal < 22) {
-      setWinner("You Win!")
+      setWinner("You Win!");
     } else if (dealerHandTotal > playerHandTotal && dealerHandTotal < 22) {
-      setWinner("Dealer Wins!")
+      setWinner("Dealer Wins!");
     } else if (playerHandTotal < 22 && dealerHandTotal > 21) {
-      setWinner("You Win!")
+      setWinner("You Win!");
     } else if (dealerHandTotal < 22 && playerHandTotal > 21) {
-      setWinner("Dealer Wins!")
+      setWinner("Dealer Wins!");
     }
   }
 
   function createDeck() {
-    setPhaseOfGame("new")
-    let newDeck = []
+    setPhaseOfGame("new");
+    let newDeck: Card[] = [];
     for (let i: number = 0; i < 13; i++) {
-      let value: string = (i + 1).toString()
+      let value: string = (i + 1).toString();
       if (i == 0 || i > 9) {
         switch (i) {
           case 10:
-            value = "Jack"
-            break
+            value = "Jack";
+            break;
           case 11:
-            value = "Queen"
-            break
+            value = "Queen";
+            break;
           case 12:
-            value = "King"
-            break
+            value = "King";
+            break;
           case 0:
-            value = "Ace"
-            break
+            value = "Ace";
+            break;
         }
       }
       newDeck.push({ value: value, suit: 'Spade' });
@@ -65,79 +65,77 @@ function App() {
       newDeck.push({ value: value, suit: 'Diamond' });
       newDeck.push({ value: value, suit: 'Heart' });
     }
-    return newDeck
+    return newDeck;
   }
 
   function getRandomInt(max: number) {
-    let maxWithoutZero = max + 1
+    let maxWithoutZero: number = max + 1;
     return Math.floor(Math.random() * maxWithoutZero);
   }
 
   const newDeck = () => {
-    let newDeck = createDeck()
-    setDeck(newDeck)
-    setPlayerHand([])
-    setDealerHand([])
-    // await new Promise(resolve => setTimeout(resolve, 5000));
+    let newDeck: Card[] = createDeck();
+    setDeck(newDeck);
+    setPlayerHand([]);
+    setDealerHand([]);
   }
   
   const startGame = () => {
-    setPlayerHand([])
-    setDealerHand([])
+    setPlayerHand([]);
+    setDealerHand([]);
     for (let i: number = 0; i < 4; i++) {
       if (i == 0 || i == 1) {
-        hit()
+        hit();
       } else {
-        dealerHit()
+        dealerHit();
       }
     }
-    setPhaseOfGame("player")
+    setPhaseOfGame("player");
   }
-  console.log(phaseOfGame)
 
   const hit = () => {
-    let cardIndex = getRandomInt(deck.length)
-    console.log("card number", cardIndex)
-    let card = deck[cardIndex]
-    let newDeck = deck
-    newDeck.splice(cardIndex, 1)
-    setDeck([...newDeck])
-    let newPlayerHand = playerHand
-    newPlayerHand.push(card)
-    setPlayerHand([...newPlayerHand])
-    console.log("playerHand", playerHand)
-    console.log("deck", deck)
-    let playerHandTotal: number = handSum(playerHand)
+    let cardIndex: number = getRandomInt(deck.length);
+    console.log("card number", cardIndex);
+    let card: Card = deck[cardIndex];
+    let newDeck: Card[] = deck;
+    newDeck.splice(cardIndex, 1);
+    setDeck([...newDeck]);
+    let newPlayerHand: Card[] = playerHand;
+    newPlayerHand.push(card);
+    setPlayerHand([...newPlayerHand]);
+    console.log("playerHand", playerHand);
+    console.log("deck", deck);
+    let playerHandTotal: number = handSum(playerHand);
     if (playerHandTotal > 21) {
-      setPhaseOfGame("end")
-      determineWinner()
+      setPhaseOfGame("end");
+      determineWinner();
     }
   }
 
   const dealerHit = () => {
-    let cardIndex = getRandomInt(deck.length)
-    console.log("card number", cardIndex)
-    let card = deck[cardIndex]
-    let newDeck = deck
-    newDeck.splice(cardIndex, 1)
-    setDeck([...newDeck])
-    let newDealerHand = dealerHand
-    newDealerHand.push(card)
-    setDealerHand([...newDealerHand])
-    console.log("DealerHand", dealerHand)
-    console.log("deck", deck)
+    let cardIndex: number = getRandomInt(deck.length);
+    console.log("card number", cardIndex);
+    let card: Card = deck[cardIndex];
+    let newDeck: Card[] = deck;
+    newDeck.splice(cardIndex, 1);
+    setDeck([...newDeck]);
+    let newDealerHand: Card[] = dealerHand;
+    newDealerHand.push(card);
+    setDealerHand([...newDealerHand]);
+    console.log("DealerHand", dealerHand);
+    console.log("deck", deck);
   }
 
   const dealerDecision = () => {
-    setPhaseOfGame("dealer")
-    let dealerHandTotal: number = handSum(dealerHand)
-    let playerHandTotal: number = handSum(playerHand)
-    console.log("handSum", dealerHandTotal)
+    setPhaseOfGame("dealer");
+    let dealerHandTotal: number = handSum(dealerHand);
+    let playerHandTotal: number = handSum(playerHand);
+    console.log("handSum", dealerHandTotal);
     if (dealerHandTotal >= 17 || dealerHandTotal > playerHandTotal) {
-      setPhaseOfGame("end")
-      determineWinner()
+      setPhaseOfGame("end");
+      determineWinner();
     } else {
-      dealerHit()
+      dealerHit();
     }
   }
 
@@ -146,25 +144,25 @@ function App() {
     let aceCount: number = 0;
     for (let card of hand) {
       if (card.value == ("King") || card.value == ("Queen") || card.value == ("Jack")) {
-        sum = sum + 10
+        sum = sum + 10;
       } else if (card.value == "Ace") {
-        sum = sum + 11
-        aceCount++
+        sum = sum + 11;
+        aceCount++;
       } else {
-        sum = sum + parseInt(card.value)
+        sum = sum + parseInt(card.value);
       }
     }
     if (sum > 21) {
-      let newSum = sum
+      let newSum: number = sum;
       for (let i: number = aceCount; i > 0; i--) {
-        newSum -= 10
+        newSum -= 10;
         if (newSum <= 21) {
           break;
         }
       }
-      sum = newSum
+      sum = newSum;
     }
-    return sum
+    return sum;
   }
 
   return (
