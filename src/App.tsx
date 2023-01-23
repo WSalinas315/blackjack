@@ -6,7 +6,7 @@ import './App.css';
 function App() {
 
   interface Card {
-    value: number;
+    value: string;
     suit: string;
   }
 
@@ -15,17 +15,34 @@ function App() {
   const [dealerHand, setDealerHand] = useState<Card[]>([]);
   const [dealerAction, setDealerAction] = useState<string>('hit');
 
-useEffect(() => {
+  useEffect(() => {
 
-})
+  })
 
   function createDeck() {
     let newDeck = []
     for (let i: number = 0; i < 13; i++) {
-      newDeck.push({ value: i + 1, suit: 'Spade' });
-      newDeck.push({ value: i + 1, suit: 'Club' });
-      newDeck.push({ value: i + 1, suit: 'Diamond' });
-      newDeck.push({ value: i + 1, suit: 'Heart' });
+      let value: string = (i + 1).toString()
+      if (i == 0 || i > 9) {
+        switch (i) {
+          case 10:
+            value = "Jack"
+            break
+          case 11:
+            value = "Queen"
+            break
+          case 12:
+            value = "King"
+            break
+          case 0:
+            value = "Ace"
+            break
+        }
+      }
+      newDeck.push({ value: value, suit: 'Spade' });
+      newDeck.push({ value: value, suit: 'Club' });
+      newDeck.push({ value: value, suit: 'Diamond' });
+      newDeck.push({ value: value, suit: 'Heart' });
     }
     return newDeck
   }
@@ -42,7 +59,7 @@ useEffect(() => {
     setDealerHand([])
     // await new Promise(resolve => setTimeout(resolve, 5000));
   }
-  
+
   const startGame = () => {
     for (let i: number = 0; i < 4; i++) {
       if (i == 0 || i == 1) {
@@ -93,15 +110,29 @@ useEffect(() => {
     console.log('IN  HAND SUM')
     console.log(hand)
     let sum = 0;
+    let aceCount = 0;
     for (let card of hand) {
-      if (card.value > 10) {
+      if (card.value == ("King") || card.value == ("Queen") || card.value == ("Jack")) {
         sum = sum + 10
-      // } else if (card.value == 1) {
-
-      // }
+      } else if (card.value == "Ace") {
+        sum = sum + 11
+        aceCount++
       } else {
-        sum = sum + card.value
+        sum = sum + parseInt(card.value)
       }
+    }
+    if (sum > 21) {
+      console.log('sum is more than 21', sum)
+      let newSum = sum
+      for (let i: number = aceCount; i > 0; i--) {
+        console.log('ace being counted')
+        newSum -= 10
+        console.log('newSum is', newSum)
+        if (newSum <= 21) {
+          break;
+        }
+      }
+      sum = newSum
     }
     console.log('sum', sum)
     return sum
@@ -110,7 +141,7 @@ useEffect(() => {
   return (
     <div className="App">
       Blackjack!
-      
+
       <button onClick={newDeck}>
         new deck
       </button>
@@ -121,30 +152,28 @@ useEffect(() => {
         hit
       </button>
       <div className="deck">
-        {playerHand && playerHand.map((card:Card, i) => 
-        {
+        {playerHand && playerHand.map((card: Card, i) => {
           return (
             <div key={i}>
               {card.value} of {" "} {card.suit}s
             </div>
-            )
-          }
+          )
+        }
         )}
-        {/* Player's Total Card Value: {handSum(playerHand)} */}
-        <br/>
-      <button onClick={dealerDecision}>
-        Dealer Plays!
-      </button>
-        <br/>
-        <br/>
-        {dealerHand && dealerHand.map((card:Card, i) => 
-        {
+        Player's Total Card Value: {handSum(playerHand)}
+        <br />
+        <button onClick={dealerDecision}>
+          Dealer Plays!
+        </button>
+        <br />
+        <br />
+        {dealerHand && dealerHand.map((card: Card, i) => {
           return (
             <div key={i}>
               {card.value} of {" "} {card.suit}s
             </div>
-            )
-          }
+          )
+        }
         )}
         {/* Dealer's Total Card Value: {handSum(dealerHand)} */}
       </div>
